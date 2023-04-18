@@ -9,6 +9,9 @@ services:
             - {{ 'mysqldata_' ~ database.mysqlDatabase }}:/var/lib/mysql
             - {{ '~/.spaceport/mysql/' ~ database.mysqlDatabase }}:/docker-entrypoint-initdb.d
         restart: unless-stopped
+        networks:
+            - default
+            - spaceport_network
         environment:
             MYSQL_ROOT_PASSWORD: password
             MYSQL_DATABASE: {{ database.mysqlDatabase }}
@@ -17,15 +20,6 @@ services:
         ports:
             - {{ database.mysqlPort ~ ":3306" }}
     {% endfor %}
-    {{- 'phpmyadmin' }}
-        image: phpmyadmin
-        restart: always
-        links:
-        {%- for database in shuttle.databases %}
-    {{ '- mysql_' ~ database.mysqlDatabase ~ '\n' }}
-        {%- endfor %}
-        ports:
-          - 8081:80
     {{- 'web:' }}
         image: fpfis/httpd-php-dev:{{ shuttle.phpVersion }}
         restart: unless-stopped
@@ -55,7 +49,7 @@ services:
         {%- endfor %}
         networks:
             - default
-            - isolated_maildev
+            - spaceport_network
         environment:
             COMPOSERVER: "--2"
             DOCUMENT_ROOT: /app/public
@@ -85,5 +79,5 @@ volumes:
     {% endfor %}
 
 networks:
-    isolated_maildev:
+    spaceport_network:
         external: true

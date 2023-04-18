@@ -7,7 +7,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class StartCommand extends AbstractCommand
 {
-    const MAILDEV_NETWORK = "isolated_maildev";
+    const SPACEPORT_NETWORK = "spaceport_network";
 
     protected function configure(): void
     {
@@ -50,6 +50,7 @@ class StartCommand extends AbstractCommand
         $this->logStep("Building required containers");
         $this->startWatchtower();
         $this->startMaildev();
+        $this->startPHPMyAdmin();
         $this->startContainers($output);
         $this->logSuccess($this->getDockerRunningTextMessage());
     }
@@ -62,16 +63,16 @@ class StartCommand extends AbstractCommand
     private function startMaildev(): void
     {
         //Check if the network is already created
-        $output = $this->runCommand('docker network ls | grep ' . self::MAILDEV_NETWORK, null, [], true);
+        $output = $this->runCommand('docker network ls | grep ' . self::SPACEPORT_NETWORK, null, [], true);
         if (empty($output)) {
-            $this->logStep("Creating maildev network");
-            $this->runCommand("docker network create isolated_maildev");
+            $this->logStep("Creating spaceport network");
+            $this->runCommand("docker network create " . self::SPACEPORT_NETWORK);
         }
         //Check if maildev container is present
         $containerId = $this->runCommand('docker container ls -a -f name=maildev -q');
         if (empty($containerId)) {
             $this->logStep('Starting maildev');
-            $this->runCommand('docker container run --network isolated_maildev -d --restart=always -p 1080:1080 -e CONTAINER_NAME=maildev --name maildev schickling/mailcatcher', 600);
+            $this->runCommand('docker container run --network spaceport_network -d --restart=always -p 1080:1080 -e CONTAINER_NAME=maildev --name maildev schickling/mailcatcher', 600);
 
             return;
         }
@@ -83,6 +84,34 @@ class StartCommand extends AbstractCommand
             $this->runCommand('docker container start ' . $containerId);
         } else {
             $this->logStep("maildev already running -- Skipping");
+        }
+    }
+
+
+    private function startPHPMyAdmin(): void
+    {
+        //Check if the network is already created
+        $output = $this->runCommand('docker network ls | grep ' . self::SPACEPORT_NETWORK, null, [], true);
+        if (empty($output)) {
+            $this->logStep("Creating spaceport network");
+            $this->runCommand("docker network create " . self::SPACEPORT_NETWORK);
+        }
+        //Check if phpmyadmin container is present
+        $containerId = $this->runCommand('docker container ls -a -f name=phpmyadmin -q');
+        if (empty($containerId)) {
+            $this->logStep('Starting phpmyadmin');
+            $this->runCommand('docker container run --network spaceport_network -d --restart=always -p 8081:80 -e PMA_ARBITRARY=1 -e CONTAINER_NAME=phpmyadmin --name phpmyadmin phpmyadmin', 600);
+
+            return;
+        }
+
+        //Check if phpmyadmin is running
+        $containerRunning = $this->runCommand('docker container inspect -f {{.State.Running}} ' . $containerId);
+        if ($containerRunning === 'false') {
+            $this->logStep("Starting phpmyadmin");
+            $this->runCommand('docker container start ' . $containerId);
+        } else {
+            $this->logStep("phpmyadmin already running -- Skipping");
         }
     }
 
