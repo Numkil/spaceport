@@ -27,7 +27,7 @@ class CopyCommand extends AbstractCommand
     {
         $this->logStep(sprintf("Copying directory/file %s", $directory));
         $projectName = $this->shuttle->getName();
-        $this->runCommand(sprintf('docker cp %s-web-1:/app/%s .', $projectName, $directory));
+        $this->runCommand(sprintf('docker cp %s_web_1:/app/%s .', $projectName, $directory));
 
         return 0;
     }
