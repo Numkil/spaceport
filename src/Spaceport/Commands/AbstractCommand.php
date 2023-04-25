@@ -12,8 +12,7 @@ use Symfony\Component\Process\Process;
 
 abstract class AbstractCommand extends Command
 {
-    const DOCKER_COMPOSE_FILE_NAME = "docker-compose.yml";
-//    CONST DINGHY_CERTS_DIR_PATH = "~/.dinghy/certs/";
+    public const DOCKER_COMPOSE_FILE_NAME = "docker-compose.yml";
 
     use TwigTrait;
     use IOTrait;

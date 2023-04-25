@@ -21,7 +21,6 @@ abstract class SfInitHelper
     abstract public function getTwigTemplateNameConfigDockerFile();
     abstract public function getDatabaseSettings();
     abstract public function getApacheDocumentRoot();
-
     abstract public function dockerizeApp(Shuttle $shuttle);
 
     public function __construct(InputInterface $input, OutputInterface $output)

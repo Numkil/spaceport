@@ -5,6 +5,11 @@ services:
     {{- 'mysql_' ~ database.mysqlDatabase }}:
         image: percona/percona-server:{{ shuttle.mysqlVersion }}
         command: --innodb-log-file-size=1G --max_allowed_packet=1G --innodb-buffer-pool-size=512M --wait_timeout=3000 --net_write_timeout=3000 --log_error_verbosity=3
+        ulimits:
+            nproc: 65535
+            nofile:
+                soft: 26677
+                hard: 46677
         volumes:
             - {{ 'mysqldata_' ~ database.mysqlDatabase }}:/var/lib/mysql
             - {{ '~/.spaceport/mysql/' ~ database.mysqlDatabase }}:/docker-entrypoint-initdb.d
@@ -52,7 +57,7 @@ services:
             - spaceport_network
         environment:
             COMPOSERVER: "--2"
-            DOCUMENT_ROOT: /app/public
+            DOCUMENT_ROOT: {{ shuttle.documentRoot }}
             HTTPS_METHOD: noredirect
             APP_ENV: docker
             SYMFONY_ENV: docker
@@ -68,14 +73,13 @@ services:
             discovery.type: "single-node"
         ports:
             - "9200:9200"
-
     {%- endif %}
     {{ "\n" }}
 volumes:
     vendor: {}
     node_modules: {}
     {% for database in shuttle.databases %}
-    {{- 'mysqldata_' ~ database.mysqlDatabase }}: {}
+{{- 'mysqldata_' ~ database.mysqlDatabase }}: {}
     {% endfor %}
 
 networks:

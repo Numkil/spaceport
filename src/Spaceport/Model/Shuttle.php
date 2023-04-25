@@ -17,11 +17,6 @@ class Shuttle
     private $server;
 
     /**
-     * @var string
-     */
-    private $apacheVhost;
-
-    /**
      * @var DatabaseConnection[]
      */
     private $databases;
@@ -29,12 +24,7 @@ class Shuttle
     /**
      * @var string
      */
-    private $apacheDocumentRoot;
-
-    /**
-     * @var string
-     */
-    private $apacheFallbackDomain;
+    private $documentRoot;
 
     /**
      * @var string
@@ -57,21 +47,11 @@ class Shuttle
     /**
      * @var bool
      */
-    private $runSync;
-
-    /**
-     * @var bool
-     */
     private $sslEnabled;
-
-    const DOCKER_EXT = '.dev.kunstmaan.be';
 
     public function __construct()
     {
         $this->name = $this->getProjectName();
-        $this->apacheVhost = $this->name . self::DOCKER_EXT;
-        $this->apacheDocumentRoot = '/app/web/';
-        $this->runSync = false;
         $this->databases = [];
     }
 
@@ -115,52 +95,14 @@ class Shuttle
         return null !== $this->server;
     }
 
-    /**
-     * @return string
-     */
-    public function getApacheVhost()
+    public function getDocumentRoot()
     {
-        return $this->apacheVhost;
+        return $this->documentRoot;
     }
 
-    /**
-     * @param string $apacheVhost
-     */
-    public function setApacheVhost($apacheVhost)
+    public function setDocumentRoot($documentRoot)
     {
-        $this->apacheVhost = $apacheVhost;
-    }
-
-    /**
-     * @return string
-     */
-    public function getApacheDocumentRoot()
-    {
-        return $this->apacheDocumentRoot;
-    }
-
-    /**
-     * @param string $apacheDocumentRoot
-     */
-    public function setApacheDocumentRoot($apacheDocumentRoot)
-    {
-        $this->apacheDocumentRoot = $apacheDocumentRoot;
-    }
-
-    /**
-     * @return bool|string
-     */
-    public function getApacheFallbackDomain()
-    {
-        return $this->apacheFallbackDomain;
-    }
-
-    /**
-     * @param bool|string $apacheFallbackDomain
-     */
-    public function setApacheFallbackDomain($apacheFallbackDomain)
-    {
-        $this->apacheFallbackDomain = $apacheFallbackDomain === '/' ? null : $apacheFallbackDomain;
+        $this->documentRoot = $documentRoot;
     }
 
     /**
@@ -196,22 +138,6 @@ class Shuttle
         $this->elasticsearchVersion = $elasticsearchVersion;
 
         return $this;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function shouldRunSync()
-    {
-        return $this->runSync;
-    }
-
-    /**
-     * @param boolean $runSync
-     */
-    public function setRunSync($runSync)
-    {
-        $this->runSync = $runSync;
     }
 
     /**

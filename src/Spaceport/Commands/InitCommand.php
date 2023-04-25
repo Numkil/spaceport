@@ -30,6 +30,7 @@ class InitCommand extends AbstractCommand
     protected function doExecute(InputInterface $input, OutputInterface $output): int
     {
         $this->initHelper = new Sf4InitInitHelper($input, $output);
+        $this->shuttle->setDocumentRoot($this->initHelper->getApacheDocumentRoot());
 
         if (!$this->isDockerized(true) || $input->getOption('force')) {
             $this->writeDockerComposeFile();

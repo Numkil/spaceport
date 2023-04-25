@@ -26,7 +26,7 @@ class Sf4InitInitHelper extends SfInitHelper
 
     public function getApacheDocumentRoot(): string
     {
-        return "public";
+        return "/app/public";
     }
 
     public function dockerizeApp(Shuttle $shuttle): void
