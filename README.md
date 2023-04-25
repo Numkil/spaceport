@@ -5,8 +5,8 @@
 
 ## Installation
 
-git clone https://github.com/Kunstmaan/spaceport.git /some/path/spaceport
-cd /some/path/spaceport
+git clone https://github.com/Kunstmaan/spaceport.git [your-path]/spaceport
+cd [your-path]/spaceport
 composer install
-chmod +x /some/path/spaceport/spaceport
-ln -s /some/path/spaceport/spaceport /usr/local/bin/spaceport   
+vendor/bin/box compile
+ln -s [your-path]/spaceport/spaceport.phar /usr/local/bin/spaceport
